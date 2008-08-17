@@ -2,7 +2,7 @@ require 'memcached'
 
 module ActiveSupport
   module Cache
-    class MemachedStore < Store
+    class MemcachedStore < Store
 
       attr_reader :addresses
 
@@ -16,36 +16,42 @@ module ActiveSupport
 
       def read(key, options = nil)
         with_safety do
-          super
-          @data.get(key, raw?(options))
-        rescue Memcached::NotFound => e
-          logger.error("MemcachedError (#{e}): #{e.message}")
-          nil
-        end  
+          begin
+            super
+            @data.get(key, raw?(options))
+          rescue Memcached::NotFound => e
+            logger.error("MemcachedError (#{e}): #{e.message}")
+            nil
+          end
+        end    
       end
 
       # Set key = value. Pass :unless_exist => true if you don't
       # want to update the cache if the key is already set.
       def write(key, value, options = nil)
         with_safety( false ) do
-          super
-          method = options && options[:unless_exist] ? :add : :set
-          @data.send(method, key, value, expires_in(options), raw?(options))
-          true
-        rescue Memcached::NotStored => e
-          logger.error("MemcachedError (#{e}): #{e.message}")
-          false
+          begin
+            super
+            method = options && options[:unless_exist] ? :add : :set
+            @data.send(method, key, value, expires_in(options), raw?(options))
+            true
+          rescue Memcached::NotStored => e
+            logger.error("MemcachedError (#{e}): #{e.message}")
+            false
+          end  
         end
       end
 
       def delete(key, options = nil)
         with_safety( false ) do
-          super
-          @data.delete(key)
-          true
-        rescue Memcached::NotFound => e
-          logger.error("MemcachedError (#{e}): #{e.message}")
-          false
+          begin
+            super
+            @data.delete(key)
+            true
+          rescue Memcached::NotFound => e
+            logger.error("MemcachedError (#{e}): #{e.message}")
+            false
+          end  
         end
       end
 
@@ -57,21 +63,25 @@ module ActiveSupport
 
       def increment(key, amount = 1)
         with_safety do
-          log("incrementing", key, amount)
+          begin
+            log("incrementing", key, amount)
 
-          @data.incr(key, amount)
-        rescue Memcached::NotFound => e
-          nil
+            @data.incr(key, amount)
+          rescue Memcached::NotFound => e
+            nil
+          end  
         end
       end
 
       def decrement(key, amount = 1)
         with_safety do
-          log("decrement", key, amount)
-
-          @data.decr(key, amount)
-        rescue Memcached::NotFound => e
-          nil
+          begin
+            log("decrement", key, amount)
+ 
+            @data.decr(key, amount)
+          rescue Memcached::NotFound => e
+            nil
+          end  
         end
       end
 
