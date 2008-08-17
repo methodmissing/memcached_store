@@ -18,9 +18,10 @@ module ActiveSupport
         with_safety do
           begin
             super
-            @data.get(key, raw?(options))
+            result = @data.get(key, raw?(options))
+            logger.error "** #{result.inspect}"
+            result
           rescue Memcached::NotFound => e
-            logger.error("MemcachedError (#{e}): #{e.message}")
             nil
           end
         end    
@@ -36,7 +37,7 @@ module ActiveSupport
             @data.send(method, key, value, expires_in(options), raw?(options))
             true
           rescue Memcached::NotStored => e
-            logger.error("MemcachedError (#{e}): #{e.message}")
+            logger.error("[write:#{key}] MemcachedError (#{e}): #{e.message}")
             false
           end  
         end
@@ -49,7 +50,7 @@ module ActiveSupport
             @data.delete(key)
             true
           rescue Memcached::NotFound => e
-            logger.error("MemcachedError (#{e}): #{e.message}")
+            logger.error("[delete:#{key}] MemcachedError (#{e}): #{e.message}")
             false
           end  
         end
@@ -107,8 +108,8 @@ module ActiveSupport
         def with_safety( return_value = nil )
           begin
             yield
-          rescue Memcached::Error => e
-            logger.error("MemcachedError (#{e}): #{e.message}")  
+          rescue Memcached::Error => exception
+            logger.error("MemcachedError (#{exception}): #{exception.message}")  
             return_value
           end   
         end
@@ -118,7 +119,7 @@ module ActiveSupport
         end
 
         def raw?(options)
-          options && options[:raw]
+          !( options && options[:raw] )
         end
     end
   end
