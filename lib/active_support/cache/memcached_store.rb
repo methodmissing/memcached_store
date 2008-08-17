@@ -18,9 +18,7 @@ module ActiveSupport
         with_safety do
           begin
             super
-            result = @data.get(key, raw?(options))
-            logger.error "** #{result.inspect}"
-            result
+            @data.get(key, raw?(options))
           rescue Memcached::NotFound => e
             nil
           end
