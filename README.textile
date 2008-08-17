@@ -1,0 +1,19 @@
+<h1>ActiveSupport Memcached Cache Store</h1>
+
+Drop in replacement for ActiveSupport::Cache::MemCacheStore powered by Evan Weaver's Memcached ( http://github.com/fauna/memcached/tree/master )
+
+<h2>Installation</h2>
+
+<pre><code>
+./script/plugin install git://github.com/methodmissing/memcached_store_.git
+</code></pre>
+
+<h2>Usage</h2>
+
+<pre><code>
+config.cache_store = :memcached_store, '127.0.0.1:11211', { :namespace => "production" }	
+</code></pre>	
+
+See http://github.com/fauna/memcached/tree/master/lib/memcached/memcached.rb for configuration options.
+
+Copyright (c) 2008 [Lourens Naudé], released under the MIT license
