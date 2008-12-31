@@ -1,1 +1,1 @@
-require 'memcached_store'
+require 'active_support/cache/memcached_store'
