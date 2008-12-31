@@ -8,10 +8,10 @@ module ActiveSupport
 
       def initialize(*addresses)
         addresses = addresses.flatten
-        options = addresses.extract_options!
+        @options = addresses.extract_options!
         addresses = ["localhost:11211"] if addresses.empty?
         @addresses = addresses
-        @data = Memcached.new(addresses, options)
+        @data = Memcached.new(addresses, @options)
       end
 
       def read(key, options = nil)
@@ -113,7 +113,7 @@ module ActiveSupport
         end
         
         def expand_cache_key( key )
-          self.class.expand_cache_key( key )
+          ActiveSupport::Cache.expand_cache_key( key, @options[:namespace] )
         end
       
         def expires_in(options)
