@@ -18,7 +18,7 @@ module ActiveSupport
         with_safety do
           begin
             super
-            @data.get(key, raw?(options))
+            @data.get(expand_cache_key( key ), raw?(options))
           rescue Memcached::NotFound => e
             nil
           end
@@ -32,7 +32,7 @@ module ActiveSupport
           begin
             super
             method = options && options[:unless_exist] ? :add : :set
-            @data.send(method, key, value, expires_in(options), raw?(options))
+            @data.send(method, expand_cache_key( key ), value, expires_in(options), raw?(options))
             true
           rescue Memcached::NotStored => e
             logger.error("[write:#{key}] MemcachedError (#{e}): #{e.message}")
@@ -45,7 +45,7 @@ module ActiveSupport
         with_safety( false ) do
           begin
             super
-            @data.delete(key)
+            @data.delete( expand_cache_key( key ) )
             true
           rescue Memcached::NotFound => e
             logger.error("[delete:#{key}] MemcachedError (#{e}): #{e.message}")
@@ -65,7 +65,7 @@ module ActiveSupport
           begin
             log("incrementing", key, amount)
 
-            @data.incr(key, amount)
+            @data.incr(expand_cache_key( key ), amount)
           rescue Memcached::NotFound => e
             nil
           end  
@@ -77,7 +77,7 @@ module ActiveSupport
           begin
             log("decrement", key, amount)
  
-            @data.decr(key, amount)
+            @data.decr(expand_cache_key( key ), amount)
           rescue Memcached::NotFound => e
             nil
           end  
