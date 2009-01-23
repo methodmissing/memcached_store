@@ -3,7 +3,8 @@ require 'memcached'
 module ActiveSupport
   module Cache
     class MemcachedStore < Store
-
+      extend Strategy::LocalCache
+      
       attr_reader :addresses
 
       def initialize(*addresses)
