@@ -3,7 +3,7 @@ require 'memcached'
 module ActiveSupport
   module Cache
     class MemcachedStore < Store
-      extend Strategy::LocalCache
+      #extend Strategy::LocalCache
       
       attr_reader :addresses
 
