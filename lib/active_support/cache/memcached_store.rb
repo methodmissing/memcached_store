@@ -12,7 +12,7 @@ module ActiveSupport
         addresses = ["localhost:11211"] if addresses.empty?
         @addresses = addresses
         @data = Memcached.new(addresses, @options)
-        extend Strategy::LocalCache
+        #extend Strategy::LocalCache
       end
 
       def read(key, options = nil)
